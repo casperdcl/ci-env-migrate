@@ -9,6 +9,7 @@ Arguments:
 
 Options:
   -t TOKEN, --token TOKEN  : If unspecified, use `$GH_SECRETS_TOKEN`
+  -f FILE, --env-file FILE  : file containing <secrets> (one per line)
   -v, --verbose  : Debug logging
 """
 from argopt import argopt
@@ -48,7 +49,8 @@ def get_public_key(owner, repo, token):
 def put_secrets(owner, repo, token, **secrets):
     key_id, key = get_public_key(owner, repo, token)
     for k, v in secrets.items():
-        log.debug("export '%s'='%s'", k, v)
+        log.info("variable %s", k)
+        log.debug("setting '%s' to '%s'", k, v)
         data = (
             dict(
                 encrypted_value=encrypt(key, v),
@@ -73,4 +75,10 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
     token = args.token or os.getenv("GH_SECRETS_TOKEN")
     owner, repo = args.repo.split("/")
-    put_secrets(owner, repo, token, **dict(i.split("=") for i in args.secrets))
+    if args.env_file:
+        with open(args.env_file) as fd:
+            secrets = dict(i.split("=") for i in fd.readlines())
+    else:
+        secrets = {}
+    secrets.update(i.split("=") for i in args.secrets)
+    put_secrets(owner, repo, token, **secrets)

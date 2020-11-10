@@ -20,6 +20,7 @@ import os
 import requests
 
 API = "https://api.github.com"
+SUCCESS = {201: "Created", 204: "Updated"}
 log = logging.getLogger("gh")
 
 
@@ -51,23 +52,20 @@ def put_secrets(owner, repo, token, **secrets):
     for k, v in secrets.items():
         log.info("variable %s", k)
         log.debug("setting '%s' to '%s'", k, v)
-        data = (
-            dict(
-                encrypted_value=encrypt(key, v),
-                key_id=key_id,
-                # owner=owner, repo=repo, secret_name=k
-            ),
-        )
+        data = {"encrypted_value": encrypt(key, v), "key_id": key_id}
         log.debug(data)
         res = requests.put(
             f"{API}/repos/{owner}/{repo}/actions/secrets/{k}",
-            data=data,
+            json=data,
             headers={
                 "Authorization": f"token {token}",
                 "Accept": "application/vnd.github.v3+json",
             },
         )
-        print(res)
+        if res.status_code not in SUCCESS:
+            log.warn("%s: %s", res, res.json())
+        else:
+            log.info(SUCCESS[res.status_code])
 
 
 if __name__ == "__main__":

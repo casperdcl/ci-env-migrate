@@ -63,7 +63,7 @@ def put_secrets(owner, repo, token, **secrets):
             },
         )
         if res.status_code not in SUCCESS:
-            log.warn("%s: %s", res, res.json())
+            log.error("%s: %s", res, res.json())
         else:
             log.info(SUCCESS[res.status_code])
 

@@ -75,8 +75,8 @@ if __name__ == "__main__":
     owner, repo = args.repo.split("/")
     if args.env_file:
         with open(args.env_file) as fd:
-            secrets = dict(i.split("=") for i in fd.readlines())
+            secrets = dict(i.split("=", 1) for i in fd.readlines())
     else:
         secrets = {}
-    secrets.update(i.split("=") for i in args.secrets)
+    secrets.update(i.split("=", 1) for i in args.secrets)
     put_secrets(owner, repo, token, **secrets)

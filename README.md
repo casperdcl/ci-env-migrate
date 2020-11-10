@@ -3,6 +3,22 @@
 Created mostly to import from Travis to GitHub Actions due to
 <https://www.jeffgeerling.com/blog/2020/travis-cis-new-pricing-plan-threw-wrench-my-open-source-works>
 
+For example, add an API token with `repo` scope to Travis settings
+under the env var `GH_SECRETS_TOKEN`, then replace `.travis.yml` with:
+
+```yaml
+language: python
+jobs:
+  include:
+  - name: migrate
+    python: 3.7
+install:
+- git clone https://github.com/casperdcl/ci-env-migrate
+- pip install -r ci-env-migrate/requirements.txt
+script:
+- python ci-env-migrate/gh.py $TRAVIS_REPO_SLUG "SOMEVAR=$SOMEVAR"
+```
+
 ## Install
 
 ```sh

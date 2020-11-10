@@ -14,8 +14,21 @@ pip3 install -r ci-env-migrate/requirements.txt
 
 ```sh
 # to Github Actions
-python3 ci-env-migrate/gh.py --token $GH_SECRETS_TOKEN owner/repo SOMEVAR=secret
+python3 ci-env-migrate/gh.py owner/repo SOMEVAR=secret
 ```
 
-Note that `--token` is optional if `$GH_SECRETS_TOKEN` is present in the current env.
-The token must have `repo` scope.
+`$GH_SECRETS_TOKEN` must be present and have `repo` scope.
+
+```
+Usage:
+  gh.py [options] <repo> [<secrets>...]
+
+Arguments:
+  <repo>  : Repo slug (e.g. casperdcl/test)
+  <secrets>  : Secrets (e.g. SOMEVAR=private)
+
+Options:
+  -t TOKEN, --token TOKEN  : If unspecified, use `$GH_SECRETS_TOKEN`
+  -f FILE, --env-file FILE  : file containing <secrets> (one per line)
+  -v, --verbose  : Debug logging
+```
